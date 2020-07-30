@@ -62,10 +62,10 @@ def ecFormatDisplay(sysStatus, window):
     #Set display attributes according to system state
     s = int(sysStatus, 16) #sysStatus comes as string
 
-    #default Values
+    #default values. In dictionary in order to easily update depending on status  
     mainState = dict(key = keyMain,  bgColor = bgOFF, borderW = 1, stat = 'OFF', selected = '')
     battState = dict(key = keyBatt,  bgColor = bgOFF, borderW = 1, stat = 'OFF', selected = '')
-    usbState =  dict(key = keyUSB,   text = ' ', bgColor = bgOFF, borderW = 1, stat = 'OK', selected = '')
+    usbState =  dict(key = keyUSB,   text = '---', bgColor = bgOFF, borderW = 1, stat = 'OK', selected = '')
  #   cpuState =  dict(key = keyCPU,   bgColor = bgOFF, borderW = 1, stat = 'OFF', selected = '')
  #   piState =   dict(key = keyPiCPU, bgColor = bgOFF, borderW = 1, stat = 'OFF', selected = '')
 
@@ -139,8 +139,8 @@ layout = [[sg.Frame('Power Supply Overview', mainFrame)],
 
   
 # Display, get values
-window = sg.Window('ECOM UPS GUI V0.8', layout, location=(350,350))
-
+#window = sg.Window('ECOM UPS GUI V0.8', layout, location=(350,350))
+window = sg.Window('ECOM UPS GUI V0.8', layout)
 ups2Values = ups.ecGetUPSValues(ser)
 print('UPS Status', ups2Values)
 analogStr = ups.ecFormatAnalog(ups2Values[1])        
