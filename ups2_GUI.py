@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
+"""
+Graphical interface for UPS-2 UART serial mode.
+
+Usage:
+    * For autostart: put this script in /etc/xdg/lxsession/LXDE-pi/autostart
+    * This script needs PySimpleGUI.py found on https://github.com/PySimpleGUI/PySimpleGUI
+    * Raspberry serial interface must be enabled (with raspi-config) i.e.
+    * ups2_serial.py worker service must be started (instructions see docstring)
+"""
+#Todo: abs
+#    calendar timed functions
+#    email and/or other messaging functions
+
 import PySimpleGUI as sg
 import os
 import ups2_Interface as ups
 
-"""
-#for autostart: put this script in /etc/xdg/lxsession/LXDE-pi/autostart
-"""
+
 
 print('PySimpleGUI Version', sg.version)
 
@@ -13,7 +24,6 @@ sg.theme('lightGreen')
 sg.SetOptions(button_element_size=(9,1), auto_size_buttons=False, font='Helvetica 11')
 ser = ups.ecInitSerial()
 fT = open("/sys/class/thermal/thermal_zone0/temp", "r") #Pi processor temperature
-
 
 #globals
 bgOFF = 'lightgrey'
@@ -28,7 +38,13 @@ keyCPU = 'K_CPU_T'
 keyPiCPU = 'K_PI_T'
 
 def ecPopWin(count, title = 'ECOM UPS2'):
-#Open a modal popup for count seconds and return 'shutdown' or 'cancel'
+    '''Opens a modal popup for count seconds and returns "shutdown" or "cancel"
+
+    Args:
+        param count: countdown time in seconds    
+        param title: String to display in popup banner
+    
+    '''
 
     devider = count * 10
     layout2 = [[sg.Text('Pi shuddown in'),
@@ -59,7 +75,16 @@ def ecPopWin(count, title = 'ECOM UPS2'):
 
 
 def ecFormatDisplay(sysStatus, window):
-    #Set display attributes according to system state
+    '''Set display attributes according to system state.
+    
+    This function refreshes the display depending on the system state
+    Must be periodically called by the main control loop 
+
+    Args:
+        sysStatus:  string received from UPS-2 hardware
+        window:     initialized main window 
+    '''
+    
     s = int(sysStatus, 16) #sysStatus comes as string
 
     #default values. In dictionary in order to easily update depending on status  
@@ -81,7 +106,7 @@ def ecFormatDisplay(sysStatus, window):
     if s & 0x0020:    #batt V present
         battState.update(bgColor = bgOK, stat = 'OK')
     if s & 0x0040:    #usb V present
-        usbState.update(bgColor = bgOK, text = 'active')
+        usbState.update(bgColor = bgOK, text = 'active')     
     if (s & 0x0110) == 0x0110:    #main V LOW
         mainState.update(stat = 'LOW',   bgColor = bgLOW)
     if s & 0x0200:    #main V HIGH
@@ -92,9 +117,8 @@ def ecFormatDisplay(sysStatus, window):
         battState.update(stat = 'HIGH',  bgColor = bgHIGH)
     if s & 0x1000:    #CPU temp HIGH
         battState.update(stat = 'HIGH',  bgColor = bgHIGH)
-
     
-    #adapt elements        
+    #adapt value displays        
     window['K_MAIN_V'].update(background_color = mainState['bgColor'])
     window['K_MAIN_V'].Widget.configure(borderwidth = mainState['borderW']) #use underlying element
     window['K_MAIN_STATE'].update(mainState['stat'])
@@ -103,9 +127,15 @@ def ecFormatDisplay(sysStatus, window):
     window['K_BATT_STATE'].update(battState['stat'])
     window['K_USB'].update(background_color = usbState['bgColor'])
     window['K_USB'].update(usbState['text'])
+    #adapt power button
 
-    
-
+    if s & 0x0004:
+ #      window['Power OFF'].set_tooltip('Disabled, if USB 5V supplied')
+       window['Power OFF'].update(disabled=True, disabled_button_color=('lightgrey', 'none'))
+ 
+    else:
+        window['Power OFF'].update(disabled=False)
+ #       window['Power OFF'].SetTooltip('')
 
 # Main window column layout
 col1 = [[sg.Text(text='Main supply', key="K_MAIN_LBL", size=(10,0), justification='right')],
@@ -130,7 +160,7 @@ col5 = [[sg.Text(text=' °C', key='K_CPU_T',relief=sg.RELIEF_SOLID, justificatio
 mainFrame = [[ sg.Column(col1), sg.Column(col2), sg.Column(col3), sg.Column(col4), sg.Column(col5)]]
 
 #buttons to appear in frame below
-keypanel = [[sg.Button('Power OFF'), sg.Button('Restart'), sg.Button('Standby'), sg.Button('Quit')]]
+keypanel = [[sg.Button('Power OFF', tooltip='Disabled if USB powered'), sg.Button('Restart'), sg.Button('Standby'), sg.Button('Quit')]]
 
 #frame layout around buttons
 layout = [[sg.Frame('Power Supply Overview', mainFrame)],

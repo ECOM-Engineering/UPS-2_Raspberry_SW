@@ -1,7 +1,15 @@
+"""Module containimg functions for serial communication with UPS-2 power supply.
+
+Module ups2_serial.py must be active in background.
+"""
+
 import serial
 import fcntl
 
 def ecInitSerial(device = '/dev/serial0'):
+    '''Opens serial device and returns a handle to to the device'''
+
+
     ser = serial.Serial(
     port= device,
     baudrate = 38400,
@@ -15,7 +23,7 @@ def ecInitSerial(device = '/dev/serial0'):
     return ser
 
 def ecReadline(ser):
-    """Returns a string from serial line until a '\n' chahacter"""
+    """Returns a string from serial line until a <CR> character."""
     rxLine = ""
     charCount = 0
     while True:
@@ -28,8 +36,9 @@ def ecReadline(ser):
                 charCount +=1
                 rxLine +=rxChar.decode("ascii")
 
-def ecFormatAnalog(analogStr = '0.0,0.0.25'):
-### format 'main,batt,temp' into list ###
+def ecFormatAnalog(analogStr):
+    '''Add units to analogStr 'main,batt,temp' and return as a list.'''
+
     units = ('V ','V ','°C')
     l = []
     v = analogStr.split(',')
@@ -38,6 +47,7 @@ def ecFormatAnalog(analogStr = '0.0,0.0.25'):
     return l                 
 
 def ecGetUPSValues(ser):
+    '''Requests values from UPS-2 by serial interface service ups2_serial.py.'''
     try:
         request = "r?status\n"
         fcntl.flock(ser, fcntl.LOCK_EX)
@@ -58,6 +68,8 @@ def ecGetUPSValues(ser):
         pass
 
 def ecReqUPSPowerDown(ser):
+    '''Initiates a Pi shutdown and executes power off after Pi is down'''
+    
     ack =''
     try:
         request = "r?shutdown -P\n"
@@ -70,4 +82,3 @@ def ecReqUPSPowerDown(ser):
     except:
         print("exception happended @ ecReqUPSPowerDown()")
     pass   
-
