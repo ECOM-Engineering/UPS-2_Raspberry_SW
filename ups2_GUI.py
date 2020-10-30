@@ -184,7 +184,7 @@ while 1:
     if event in (None, 'Quit'):
         break
     if event == 'Power OFF':
-        if ecPopWin(5, 'Pwr OFF') != 'cancel':
+        if ecPopWin(5, 'POWER OFF') != 'cancel':
             ups.ecReqUPSPowerDown(ser)
             os.system('sudo shutdown -P now\n')
     elif event == 'Restart':

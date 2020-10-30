@@ -61,13 +61,7 @@ while True:
 
         print("keyAction =", keyAction)             
                 
-            
-                
     except KeyboardInterrupt:
         chip.close()
         break
 print("ciao")
-        
-        
-    
-

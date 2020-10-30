@@ -7,7 +7,7 @@ import serial
 import fcntl
 
 def ecInitSerial(device = '/dev/serial0'):
-    '''Opens serial device and returns a handle to to the device'''
+    '''Opens serial device and returns a handle'''
 
 
     ser = serial.Serial(
@@ -47,7 +47,7 @@ def ecFormatAnalog(analogStr):
     return l                 
 
 def ecGetUPSValues(ser):
-    '''Requests values from UPS-2 by serial interface service ups2_serial.py.'''
+    '''Requests values from UPS-2'''
     try:
         request = "r?status\n"
         fcntl.flock(ser, fcntl.LOCK_EX)

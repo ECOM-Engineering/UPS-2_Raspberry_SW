@@ -1,4 +1,6 @@
 """
+This is the interface to the UPS-2 power supply
+
 Place a call to this service in /etc/rc.local:
 python3 /path/to/ups2_serial.py &
 """
@@ -26,7 +28,7 @@ def ecReadline(ser):
 
 
 def ecExecSerCommand(rxLine):
-    """Check if command comes from UPS and execute."""
+    """Check if commands come from UPS and execute."""
     command = "--"
      #linux system commands from UPS
     if rxLine[0:2] == "u!":  #prefix 
