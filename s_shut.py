@@ -1,12 +1,9 @@
-import gpiod
-import time
-import sys
-import os
 import argparse        
+
 ''' shutdown control using simple switch and LED. '''
 
 def getArgs():
-    '''call script from file /etc/rc.local including path'''
+    '''Read arguments from command line'''
 
     ledDefault = 21
     switchDefault = 20
@@ -94,4 +91,8 @@ def worker(ports):
     print("ciao")
 
 if __name__ == "__main__":
+    import gpiod
+    import time
+    import sys
+    import os
     getArgs()
