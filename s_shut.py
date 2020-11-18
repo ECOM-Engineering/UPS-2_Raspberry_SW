@@ -13,17 +13,17 @@ def getArgs():
     parser = argparse.ArgumentParser()
                                         
     parser.add_argument("-l","--ledPort", type=int, default=ledDefault, metavar='',
-                        help='Enter LED output bcm port default = ' + str(ledDefault))
+                        help='LED output bcm port default = ' + str(ledDefault))
     parser.add_argument("-s", "--switchPort", type=int, default=switchDefault, metavar='',
-                        help='Enter switch control input bcm port default = ' + str(switchDefault))
+                        help='Switch control input bcm port default = ' + str(switchDefault))
     parser.add_argument("-p", "--powerPort", type=int, metavar='',
-                        help='optional bcm port for ext. power timer')
+                        help='Optional bcm port for external power timer')
 
     args=parser.parse_args()
-    worker(args)
+    portHandler(args)
 #    return args
 
-def worker(ports):
+def portHandler(ports):
 #    ports = getArgs()
     print('LED: GPIO'+str(ports.ledPort),
           'Switch: GPIO'+str(ports.switchPort),
@@ -58,10 +58,8 @@ def worker(ports):
             event = inPort.event_read() #rising edge: key released
             print("type", event.type)
             print('timestamp: {}.{}'.format(event.sec, event.nsec))
-    #        startTime = time.process_time() 
             t_keyrelease = event.sec + (event.nsec * 10e-10)
             pulseTime = t_keyrelease - t_keypress
-    #        print("calc time: ", time.process_time() - startTime)
 
             counter = counter + 1
             print("counter =", counter,
@@ -77,8 +75,8 @@ def worker(ports):
                     keyAction = "SHORT_PRESS"
             elif pulseTime > 5:
                 keyAction = "SUPER_LONG_PRESS"
-                os.system("sudo shutdown -h now")
-     
+                #power down needs power off through external circuitry
+                os.system("'sudo shutdown -P now")      
             elif pulseTime > 2:
                 keyAction = "LONG_PRESS"
                 os.system("sudo shutdown -h now")
