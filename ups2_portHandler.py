@@ -49,8 +49,8 @@ while True:
             if pauseTime < 0.5: #this is a double click
                 keyAction = "DOUBLE_PRESS"
                 os.system("sudo shutdown -r now")
-            else:
-                keyAction = "SHORT_PRESS"
+#            else:
+#                keyAction = "SHORT_PRESS" #not used
         elif pulseTime > 5:
             keyAction = "SUPER_LONG_PRESS"
             os.system("sudo shutdown -h now")
