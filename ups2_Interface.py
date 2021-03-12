@@ -52,15 +52,17 @@ def ecGetUPSValues(ser):
         request = "r?status\n"
         fcntl.flock(ser, fcntl.LOCK_EX)
         ser.write(str(request).encode())
-        status = ecReadline(ser)
-#        print(status)
+        status = ecReadline(ser) #UPS returns hex coded power status
+        #        print(status)
         request = "r?analog\n"
         ser.write(str(request).encode())
         analog = ecReadline(ser)
+        analog = analog[2:]
         fcntl.flock(ser, fcntl.LOCK_UN)
+        #decompose status message
         statusHex =""
-        statusHex = status[0:6] #extract hex status
-        ups2Version = status[8:]
+        statusHex = status[2:8] #extract hex status
+        ups2Version = status[10:]
 #        return {'statusHex' : statusHex, 'analog': analog, 'ups2Ver': ups2Version}    
         return(statusHex, analog, ups2Version)
     except:
