@@ -16,6 +16,7 @@ import PySimpleGUI as sg
 import os
 import ups2_Interface as ups
 
+GUI_Version = 'UPS GUI V0.8 '
 
 
 print('PySimpleGUI Version', sg.version)
@@ -170,10 +171,12 @@ layout = [[sg.Frame('Power Supply Overview', mainFrame)],
   
 # Display, get values
 #window = sg.Window('ECOM UPS GUI V0.8', layout, location=(350,350))
-window = sg.Window('ECOM UPS GUI V0.8', layout)
 ups2Values = ups.ecGetUPSValues(ser)
+ups2Version = ups.ecGetUPSVersion(ser)
 print('UPS Status', ups2Values)
 analogStr = ups.ecFormatAnalog(ups2Values[1])        
+
+window = sg.Window(GUI_Version + " | " + ups2Version, layout)
 
 
 piTemp = '0'

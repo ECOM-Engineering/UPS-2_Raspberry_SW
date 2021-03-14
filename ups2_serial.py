@@ -44,8 +44,9 @@ def ecExecSerCommand(rxLine):
     else:
         if rxLine[0:2] == "u?": 
             command = rxLine[2:]
-            ackString = ">OK " + command + "\n"
-            ser.write(str(ackString).encode())
+            if(command == "ready"): #watchdog
+                ackString = ">OK " + command + "\n"
+                ser.write(str(ackString).encode())
  
     print("Command = " + command)
     return ""

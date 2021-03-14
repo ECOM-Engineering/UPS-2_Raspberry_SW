@@ -8,8 +8,6 @@ import fcntl
 
 def ecInitSerial(device = '/dev/serial0'):
     '''Opens serial device and returns a handle'''
-
-
     ser = serial.Serial(
     port= device,
     baudrate = 38400,
@@ -47,7 +45,8 @@ def ecFormatAnalog(analogStr):
     return l                 
 
 def ecGetUPSValues(ser):
-    '''Requests values from UPS-2'''
+    '''Requests values from UPS-2.'''
+    UPS_version = "?"
     try:
         request = "r?status\n"
         fcntl.flock(ser, fcntl.LOCK_EX)
@@ -62,9 +61,22 @@ def ecGetUPSValues(ser):
         #decompose status message
         statusHex =""
         statusHex = status[2:8] #extract hex status
-        ups2Version = status[10:]
+#        ups2Version = status[10:]
 #        return {'statusHex' : statusHex, 'analog': analog, 'ups2Ver': ups2Version}    
-        return(statusHex, analog, ups2Version)
+        return(statusHex, analog)
+    except:
+        print("exception happended @ ecGetUPSValues()")
+        pass
+
+def ecGetUPSVersion(ser):
+    '''Requests firmware ersion from UPS-2.'''
+    try:
+        request = "r?version\n"
+        fcntl.flock(ser, fcntl.LOCK_EX)
+        ser.write(str(request).encode())
+        UPS_version = ecReadline(ser)[2:]
+        fcntl.flock(ser, fcntl.LOCK_UN)
+        return UPS_version
     except:
         print("exception happended @ ecGetUPSValues()")
         pass
