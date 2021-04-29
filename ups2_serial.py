@@ -1,5 +1,5 @@
 """
-This is the interface to the UPS-2 power supply
+This is the command interface UPS-2 power supply -> Raspberry Pi
 
 Place a call to this service in /etc/rc.local:
 python3 /path/to/ups2_serial.py &
@@ -25,8 +25,6 @@ def ecReadline(ser):
                 charCount +=1
                 rxLine +=rxChar.decode("ascii")
 
-
-
 def ecExecSerCommand(rxLine):
     """Check if commands come from UPS and execute."""
     command = "--"
@@ -47,8 +45,9 @@ def ecExecSerCommand(rxLine):
             if(command == "ready"): #watchdog
                 ackString = ">OK " + command + "\n"
                 ser.write(str(ackString).encode())
+                
  
-    print("Command = " + command)
+#   print("Command = " + command)
     return ""
 
         

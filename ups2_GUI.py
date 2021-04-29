@@ -151,8 +151,8 @@ col3 = [[sg.Text('OK', key='K_MAIN_STATE', size=(6,1))],
        [sg.Text('LOW', key='K_BATT_STATE', size=(6,1))],
        [sg.Text('')]]
 
-col4 = [[sg.Text('PS CPU Temp', size=(12,1), justification='right')],
-        [sg.Text('Pi CPU Temp', size=(12,1), justification='right')]]
+col4 = [[sg.Text('UPS CPU', size=(12,1), justification='right')],
+        [sg.Text('Pi CPU', size=(12,1), justification='right')]]
 
 col5 = [[sg.Text(text=' °C', key='K_CPU_T',relief=sg.RELIEF_SOLID, justification='right', background_color='#A2C477',size=(5,1))],
        [sg.Text(text='  °C', key='K_PI_T',relief=sg.RELIEF_SOLID, justification='right', background_color='#A2C477',size=(5,1))]]

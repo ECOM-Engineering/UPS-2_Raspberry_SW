@@ -1,5 +1,6 @@
 """Module containimg functions for serial communication with UPS-2 power supply.
 
+This is the command interface Raspberry Pi to UPS-2 power supply
 Module ups2_serial.py must be active in background.
 """
 
@@ -65,7 +66,7 @@ def ecGetUPSValues(ser):
 #        return {'statusHex' : statusHex, 'analog': analog, 'ups2Ver': ups2Version}    
         return(statusHex, analog)
     except:
-        print("exception happended @ ecGetUPSValues()")
+        print("exception happened @ ecGetUPSValues()")
         pass
 
 def ecGetUPSVersion(ser):
@@ -78,7 +79,7 @@ def ecGetUPSVersion(ser):
         fcntl.flock(ser, fcntl.LOCK_UN)
         return UPS_version
     except:
-        print("exception happended @ ecGetUPSValues()")
+        print("exception happened @ ecGetUPSVersion")
         pass
 
 def ecReqUPSPowerDown(ser):
@@ -94,5 +95,26 @@ def ecReqUPSPowerDown(ser):
         fcntl.flock(ser, fcntl.LOCK_UN)
         return(ack)
     except:
-        print("exception happended @ ecReqUPSPowerDown()")
+        print("exception happened @ ecReqUPSPowerDown()")
     pass   
+
+def ecReqBootloader(ser):
+    try:
+        request ="r?boot"
+        fcntl.flock(ser, fcntl.LOCK_EX)
+        ser.write(str(request).encode())
+        fcntl.flock(ser, fcntl.LOCK_UN)
+# 
+#         command = 'sudo pkill -f ups2_serial.py'
+#         os.system(str(command).encode())
+#         fcntl.flock(ser, fcntl.LOCK_UN)
+#         ser.close()
+#         command = 'stm32flash -w UPS-2_G030.bin -v -g 0x0 /dev/serial0'
+#         os.system(str(command).encode())
+#         command = 'python3 ups2_serial.py'
+#         os.system(str(command).encode())
+        return('UPS-2 now in bootloader')
+    except:
+        print("exception happened @ ecReqBootloader")
+    pass   
+        
