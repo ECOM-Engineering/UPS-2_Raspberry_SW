@@ -15,19 +15,19 @@ Usage:
 import PySimpleGUI as sg
 import os
 import ups2_Interface as ups
-import ups2_FirmwareUpd as FW_upd
+import ups2_FW_Upd_GUI as FW_upd
 
-GUI_Version = 'UPS GUI V0.8 '
+GUI_Version = 'GUI V0.8 '
 
 # ------ Menu Definition ------ #
 menu_def = [['File ', ['Quit',]],
             ['PowerControl ', ['Power OFF', 'Restart', 'Standby']],
-            ['About ', ['UPS-2 GUI', 'UPS-2 Firmware', 'PySimpleGUI']],
+            ['About ', ['UPS-2 GUI', 'UPS-2 Firmware']],
             ['Firmware_Update', ['Browse...']]]            
-
 
 print('PySimpleGUI Version', sg.version)
 
+# ------- Format User Interface ------ #
 sg.theme('lightGreen')
 sg.SetOptions(button_element_size=(9,1), auto_size_buttons=False, font='Helvetica 11')
 ser = ups.ecInitSerial()
