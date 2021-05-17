@@ -13,6 +13,7 @@ Usage:
 #    email and/or other messaging functions
 
 import PySimpleGUI as sg
+import configparser as cp
 import os
 import ups2_Interface as ups
 import ups2_FW_Upd_GUI as FW_upd
@@ -45,7 +46,7 @@ keyUSB = 'K_USB'
 keyCPU = 'K_CPU_T'
 keyPiCPU = 'K_PI_T'
 
-def ecPopWin(count, title = 'ECOM UPS2'):
+def ecPopWin(count, title = 'ECOM UPS2', message = 'Pi shuddown in'):
     '''Opens a modal popup for count seconds and returns "shutdown" or "cancel"
 
     Args:
@@ -55,12 +56,12 @@ def ecPopWin(count, title = 'ECOM UPS2'):
     '''
 
     devider = count * 10
-    layout_shutDown = [[sg.Text('Pi shuddown in'),
+    layout_shutDown = [[sg.Text(message),
                sg.Text('', key='barValue', size=(3,1), pad=(0,0)), sg.Text('seconds', pad=(0,0))],
               [sg.ProgressBar(devider, orientation='h', size=(20, 20), key='progressbar',
                 bar_color=['lightgreen','grey'])],
-              [sg.Button('Cancel'), sg.Button('Shutdown NOW', size=(12,1), focus=True)]]
-    popWin = sg.Window(title , layout_shutDown)
+              [sg.Button('Cancel'), sg.Button('NOW!', size=(12,1), focus=True)]]
+    popWin = sg.Window(title, layout_shutDown, location = eval(win_location))
 
     while True:
         ev2, values2 = popWin.read(timeout=100)
@@ -74,7 +75,7 @@ def ecPopWin(count, title = 'ECOM UPS2'):
                 action = 'cancel'
                 popWin.close()
                 return action    
-            elif ev2 == 'Shutdown NOW' or devider < 2:
+            elif ev2 == 'NOW!' or devider < 2:
                 print('SHUTTING DOWN')
                 action = 'shutdown'
                 popWin.close()
@@ -144,6 +145,13 @@ def ecFormatDisplay(sysStatus, window):
     else:
         window['Power OFF'].update(disabled=False)
  #       window['Power OFF'].SetTooltip('')
+#############################################################################
+config = cp.ConfigParser()
+config.read('ups_GUI.ini')
+if(config.has_option('Window', 'position_xy')):
+    win_location = config['Window']['position_xy']
+else:
+    win_location = '(0,0)'
 
 # Main window column layout
 col1 = [[sg.Text(text='Main supply', key="K_MAIN_LBL", size=(10,0), justification='right')],
@@ -185,7 +193,11 @@ print('UPS Status', ups2Values)
 analogStr = ups.ecFormatAnalog(ups2Values[1])        
 
 #titlebar = sg.Titlebar(title = 'hello')
-window = sg.Window(GUI_Version + " | " + ups2Version, layout)
+
+if(win_location != '(0,0)'):
+    window = sg.Window(GUI_Version + " | " + ups2Version, layout, location = eval(win_location))
+else:
+    window = sg.Window(GUI_Version + " | " + ups2Version, layout)
 
 
 piTemp = '0'
@@ -196,7 +208,7 @@ while 1:
     if event in (None, 'Quit'):
         break
     if event == 'Power OFF':
-        if ecPopWin(5, 'POWER OFF') != 'cancel':
+        if ecPopWin(5, 'POWER OFF', 'Power OFF in ') != 'cancel':
             ups.ecReqUPSPowerDown(ser)
             os.system('sudo shutdown -P now\n')
     elif event == 'Restart':
@@ -210,7 +222,7 @@ while 1:
     elif event == 'Browse...':
         print ('FW update')
         window.hide()
-        FW_upd.GetFileDialog()
+        FW_upd.GetUpdDialog()
         window.un_hide() #todo: close, if not cancelled
  
     if divider < 100: #main processing tick = 1s
@@ -236,6 +248,12 @@ while 1:
         window['K_PI_T'].update(piTemp)        
 
 #    time.sleep(.5)
+if(event != sg.WIN_CLOSED):
+    win_location = window.current_location()
+    iniFile = open('ups_GUI.ini', 'w')
+    config['Window'] = {'position_xy': win_location}
+    written = config.write(iniFile)
+    iniFile.close()
 fT.close()
 ser.close()
 window.close()          

@@ -3,7 +3,7 @@ import ups2_update
 
 ''' Select binary firmware file and update via bootloader. '''
 
-def GetFileDialog():
+def GetUpdDialog():
     success = False
     sg.SetOptions(auto_size_buttons=True, font='Helvetica 11')
 
@@ -30,7 +30,7 @@ def GetFileDialog():
                 return newFile
 
 if __name__ == "__main__":
-    newFile = GetFileDialog()
+    newFile = GetUpdDialog()
     print(newFile)
 
 
