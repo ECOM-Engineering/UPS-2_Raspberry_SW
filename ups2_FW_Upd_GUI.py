@@ -1,15 +1,19 @@
 import PySimpleGUI as sg
 import ups2_update
+import os
+
 
 ''' Select binary firmware file and update via bootloader. '''
 
 def GetUpdDialog():
+    initPath =os.path.dirname(os.path.realpath(__file__)) 
+
     success = False
     sg.SetOptions(auto_size_buttons=True, font='Helvetica 11')
 
     layout = [[sg.Text('Select Firmware Version')],
               [sg.Text('File', size=(15, 1)), sg.InputText(key='_file_'),
-                  sg.FileBrowse(button_text = '...' , initial_folder = './', file_types=(("UPS-2 Firmware", "*.bin"),))],
+                  sg.FileBrowse(button_text = '...' , initial_folder = initPath, file_types=(("UPS-2 Firmware", "*.bin"),))],
               [sg.Button('Update', key = '_btn_upd_', disabled = True), sg.Button('Cancel')]]
 
     window = sg.Window('Select UPS-2 Firmware Update',layout)
