@@ -147,7 +147,7 @@ def ecFormatDisplay(sysStatus, window):
  #       window['Power OFF'].SetTooltip('')
 #############################################################################
 config = cp.ConfigParser()
-config.read('ups_GUI.ini')
+config.read('ups2_GUI.ini')
 if(config.has_option('Window', 'position_xy')):
     win_location = config['Window']['position_xy']
 else:
@@ -192,7 +192,17 @@ ups2Version = ups.ecGetUPSVersion(ser)
 print('UPS Status', ups2Values)
 analogStr = ups.ecFormatAnalog(ups2Values[1])        
 
-#titlebar = sg.Titlebar(title = 'hello')
+str_about_FW = 'UPS-2 Hat Firmware Version: ' + ups2Version + \
+               '\nCopyright 2021 Klaus Mezger' \
+               '\nOpen Source BSD 2-Clause License' + \
+               '\nhttps://choosealicense.com/licenses/bsd-2-clause'
+str_about_GUI = 'UPS-2 GUI Version: ' + GUI_Version + \
+               '\nCopyright 2021 Klaus Mezger' \
+               '\nOpen Source BSD 2-Clause License' + \
+               '\nhttps://choosealicense.com/licenses/bsd-2-clause' + \
+               '\n\nUsing PySimpleGUI' + \
+               'https://pysimplegui.readthedocs.io/en/latest/'
+            
 
 if(win_location != '(0,0)'):
     window = sg.Window(GUI_Version + " | " + ups2Version, layout, location = eval(win_location))
@@ -217,12 +227,16 @@ while 1:
     elif event == 'Standby':
         if ecPopWin(5, 'Standby') != 'cancel':
             os.system('sudo shutdown now\n')
-    elif event == 'About':
-        print('About event')
+    elif event == 'UPS-2 GUI':
+        print('About UPS-2 GUI')
+        sg.popup(str_about_GUI, title = 'About UPS-2 GUI', location = eval(win_location))
+    elif event == 'UPS-2 Firmware':
+        print('About UPS-2 Firmware')
+        sg.popup(str_about_FW, title = 'About UPS-2 Firmware', location = eval(win_location))
     elif event == 'Browse...':
         print ('FW update')
         window.hide()
-        FW_upd.GetUpdDialog()
+        FW_upd.GetUpdDialog(eval(win_location))
         window.un_hide() #todo: close, if not cancelled
  
     if divider < 100: #main processing tick = 1s
@@ -250,7 +264,7 @@ while 1:
 #    time.sleep(.5)
 if(event != sg.WIN_CLOSED):
     win_location = window.current_location()
-    iniFile = open('ups_GUI.ini', 'w')
+    iniFile = open('ups2_GUI.ini', 'w')
     config['Window'] = {'position_xy': win_location}
     written = config.write(iniFile)
     iniFile.close()

@@ -1,0 +1,8 @@
+UPS-2 GUI and python3 scripts written by 
+Klaus Mezger, ECOM Engineering
+
+UPS-2 software is Open Source, licensed under BSD-2-claused license
+
+GUI uses the awsome PySimpleGUI library:
+https://github.com/PySimpleGUI/PySimpleGUI
+
