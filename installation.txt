@@ -1,0 +1,49 @@
+copy UPS2 files to Projects/UPS2
+
+Raspi zero for graphic desktop (if no desktop display):  
+sudo apt-get install lxde
+und ev. tkinter, falls ups2_GUI nicht funzt:
+sudo apt install python3-tk
+
+für parallel mode (--> pi zero). GPIOD library installieren:
+sudo apt install python3-libgpiod
+
+
+ADD IN CONFIG.TXT
+==================
+###ECOM UPS-2 for parallel mode
+#set GPIO20 as Input with pullup high
+gpio=20=ip,pu 
+
+
+###ECOM UPS-2 for serial mode
+enable UART in config.txt
+
+Edit /etc/rc.local 
+===================
+--> sudo chmod +x rc.local    //wird beim Start ausgeführt
+
+#serial mode
+python3 /home/pi/Projects/UPS2/ups2_serial.py & 
+
+#parallel mode
+python3 /home/pi/Projects/UPS-2/ups2_portHandler.py &
+
+Edit /etc/xdg/lxsession/LXDE-pi/autostart
+=========================================
+#serial mode
+python3 /home/pi/Projects/UPS2/ups2_serial.py & 
+
+#parallel mode
+python3 /home/pi/Projects/UPS-2/ups2_portHandler.py &
+
+#GUI, falls Autostart gewünscht
+python3 /home/pi/Projects/UPS-2/ups2_GUI.py
+
+
+HAT EEPROM
+===========
+Tools: 
+https://blog.gc2.at/post/hat-eeprom/
+https://www.raspberrypi.org/forums/viewtopic.php?t=108134
+

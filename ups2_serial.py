@@ -1,4 +1,10 @@
-#worker service, to call in /etc/rc.local
+"""
+This is the command interface UPS-2 power supply -> Raspberry Pi
+
+Place a call to this service in /etc/rc.local:
+python3 /path/to/ups2_serial.py &
+"""
+
 import serial
 import time
 import sys
@@ -6,7 +12,7 @@ import os
 import fcntl
 
 def ecReadline(ser):
-    """Returns a string from serial line until a '\n' chahacter"""
+    """Returns a string from serial line until a <CR> chahacter."""
     rxLine = ""
     charCount = 0
     while True:
@@ -19,37 +25,37 @@ def ecReadline(ser):
                 charCount +=1
                 rxLine +=rxChar.decode("ascii")
 
-
-
 def ecExecSerCommand(rxLine):
-    """check if command from UPS"""
+    """Check if commands come from UPS and execute."""
     command = "--"
      #linux system commands from UPS
     if rxLine[0:2] == "u!":  #prefix 
         command = rxLine[2:]
         command = "sudo " + command
+        #acknowledge before executing shutdown
         ackString = ">OK " + command + "\n"
         ser.write(str(ackString).encode())
         time.sleep(1) #give UPS a chance to read the ack String
  #       ser.send_break(1000.0) 
-        os.system(str(command).encode())
+        os.system(str(command).encode()) #this will normally execute a shutdown command
         
     else:
         if rxLine[0:2] == "u?": 
             command = rxLine[2:]
-            ackString = ">OK " + command + "\n"
-            ser.write(str(ackString).encode())
+            if(command == "ready"): #watchdog
+                ackString = ">OK " + command + "\n"
+                ser.write(str(ackString).encode())
+                
  
-    print("Command = " + command)
+#   print("Command = " + command)
     return ""
 
-            
         
 #        os.system(command)
- 
 
 if __name__ == "__main__":
     #ser = serial.Serial('/dev/serial0', 38400, timeout = 1) # ttyACM1 for Arduino board
+    """ This service handles serial communication with ECOM UPS-2 power supply. """
     ser = serial.Serial(
     port='/dev/serial0',
     baudrate = 38400,
@@ -76,17 +82,20 @@ if __name__ == "__main__":
     charCount = 0
     while True:
         try:
+            #lock serial interface in order to prevent interfering by other tasks
             fcntl.flock(ser, fcntl.LOCK_EX)
             rxLine = ecReadline(ser)
 #            fcntl.flock(ser, fcntl.LOCK_UN)
             rxLine = ecExecSerCommand(rxLine)
+            #unlock interface after processing rx data
             fcntl.flock(ser, fcntl.LOCK_UN)
             time.sleep(1.5) ##allow serial port by other process 
             rxLine +=rxChar.decode("ascii")
         except:
             pass
     print ("Restart")
-    ser.flush() #flush the buffer
+    #following code should never be executed
+    ser.flush() #clean up
     ser.close()
 
 
