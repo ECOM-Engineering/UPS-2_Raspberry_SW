@@ -265,7 +265,7 @@ while 1:
 #    time.sleep(.5)
 if(event != sg.WIN_CLOSED):
     win_location = window.current_location()
-    iniFile = open('ups_GUI.ini', 'w')
+    iniFile = open('ups2_GUI.ini', 'w')
     config['Window'] = {'position_xy': win_location}
     written = config.write(iniFile)
     iniFile.close()
