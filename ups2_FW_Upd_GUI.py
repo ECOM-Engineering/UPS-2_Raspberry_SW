@@ -5,7 +5,7 @@ import os
 
 ''' Select binary firmware file and update via bootloader. '''
 
-def GetUpdDialog():
+def GetUpdDialog(win_location = (50,50)):
     initPath =os.path.dirname(os.path.realpath(__file__)) 
 
     success = False
@@ -16,11 +16,9 @@ def GetUpdDialog():
                   sg.FileBrowse(button_text = '...' , initial_folder = initPath, file_types=(("UPS-2 Firmware", "*.bin"),))],
               [sg.Button('Update', key = '_btn_upd_', disabled = True), sg.Button('Cancel')]]
 
-    window = sg.Window('Select UPS-2 Firmware Update',layout)
+    window = sg.Window('Select UPS-2 Firmware Update',layout, location = win_location)
     while True:
         event, values = window.Read(timeout=200)
-        if(values['_file_'] != ''):
-            window['_btn_upd_'].update(disabled = False)
  
         if event in (None, 'Cancel'):
              window.close()
@@ -32,6 +30,10 @@ def GetUpdDialog():
                 success = ups2_update.ecUpdateUPS(newFile, True)
                 window.close()
                 return newFile
+
+        #enable update button if file selected       
+        if(values['_file_'] != ''):
+            window['_btn_upd_'].update(disabled = False) 
 
 if __name__ == "__main__":
     newFile = GetUpdDialog()
