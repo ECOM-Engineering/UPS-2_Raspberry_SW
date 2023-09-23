@@ -253,7 +253,7 @@ while 1:
         piTemp = fT.readline() 
         fT.seek(0) #reset to first line
         piTemp = piTemp[0:2] + '°C'
-        #set display attributes
+        #set display attributes No more necessary, is done by UPS2 Firmware
  #       ecFormatDisplay(sysStatus, window)  
 
         #update values
